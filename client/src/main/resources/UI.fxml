@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="695.0" prefWidth="779.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.niss.client.Controller.ClientController">
+    <children>
+        <ListView fx:id="userList" layoutX="15.0" layoutY="45.0" prefHeight="348.0" prefWidth="149.0" />
+        <TextArea fx:id="receiveMsgBox" layoutX="174.0" layoutY="51.0" prefHeight="376.0" prefWidth="602.0" promptText="All org.niss.message will be shown in this window..." style="-fx-background-color: gray;" />
+        <Button fx:id="connectServerBtn" layoutX="170.0" layoutY="14.0" mnemonicParsing="false" onAction="#connectServerBtnAction" prefHeight="25.0" prefWidth="77.0" text="Connect" />
+        <Button fx:id="sendFileBtn" layoutX="687.0" layoutY="436.0" mnemonicParsing="false" onAction="#sendFileBtnAction" prefHeight="27.0" prefWidth="83.0" text="SendFile" />
+        <Button fx:id="sendMsgBtn" layoutX="690.0" layoutY="656.0" mnemonicParsing="false" onAction="#sendMsgBtnAction" prefHeight="27.0" prefWidth="83.0" text="Send" />
+        <TextArea fx:id="msgBox" layoutX="7.0" layoutY="476.0" prefHeight="179.0" prefWidth="764.0" promptText="Type a org.niss.message" />
+        <TextField fx:id="fileBox" layoutX="377.0" layoutY="436.0" prefHeight="27.0" prefWidth="309.0" promptText="Type a filepath" />
+        <Label fx:id="statusLabel" alignment="CENTER" layoutX="254.0" layoutY="13.0" prefHeight="27.0" prefWidth="171.0" text="connetcion status" />
+        <Label fx:id="chatStatusLabel" alignment="CENTER" layoutX="457.0" layoutY="367.0" prefHeight="27.0" prefWidth="318.0" text="Label" />
+        <TextField fx:id="sendFileTargetName" layoutX="203.0" layoutY="436.0" prefHeight="27.0" prefWidth="149.0" promptText="fileTarget" />
+        <TextField fx:id="targetName" layoutX="11.0" layoutY="436.0" prefHeight="27.0" prefWidth="192.0" promptText="targetNames" />
+        <TextField fx:id="userName" layoutX="14.0" layoutY="13.0" prefHeight="27.0" prefWidth="149.0" promptText="UserName" />
+        <Button fx:id="clearMsgBtn" layoutX="14.0" layoutY="656.0" mnemonicParsing="false" onAction="#clearMsgBtnAction" prefHeight="27.0" prefWidth="83.0" text="Clear all" />
+        <Button fx:id="refreshUserListBtn" layoutX="115.0" layoutY="401.0" mnemonicParsing="false" onAction="#refreshUserList" text="refresh" />
+    </children>
+</AnchorPane>

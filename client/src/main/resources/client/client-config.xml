@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--用户登录map-->
+    <bean id="userMap" class="java.util.concurrent.ConcurrentHashMap" scope="singleton">
+        <constructor-arg name="initialCapacity" value="100"/>
+        <constructor-arg name="loadFactor" value="0.75"/>
+        <constructor-arg name="concurrencyLevel" value="1"/>
+    </bean>
+
+    <!--消息处理线程池-->
+    <bean name="sycQueue" class="java.util.concurrent.SynchronousQueue" scope="prototype"/>
+    <bean id="threadPool" class="java.util.concurrent.ThreadPoolExecutor" scope="prototype">
+        <constructor-arg name="corePoolSize" value="10"/>
+        <constructor-arg name="maximumPoolSize" value="100"/>
+        <constructor-arg name="keepAliveTime" value="6000"/>
+        <constructor-arg name="unit" value="SECONDS"/>
+        <constructor-arg name="workQueue" ref="sycQueue"/>
+    </bean>
+
+    <!--用于TCP连接服务器的Socket-->
+    <bean id="socket" class="java.net.Socket" destroy-method="close" lazy-init="true" scope="prototype">
+        <constructor-arg name="host" value="127.0.0.1"/>
+        <constructor-arg name="port" value="7072"/>
+        <property name="keepAlive" value="true"/>
+        <property name="soTimeout" value="1000000"/>
+        <property name="sendBufferSize" value="8192"/>
+        <property name="receiveBufferSize" value="8192"/>
+    </bean>
+
+    <!--TCP连接-->
+    <bean id="tcpConnection" class="org.niss.connect.TcpConnection" lazy-init="true" scope="prototype">
+        <constructor-arg name="socket" ref="socket"/>
+    </bean>
+
+    <!--UDP连接-->
+    <bean id="udpConnection" class="org.niss.connect.UdpConnection" lazy-init="true"
+          scope="singleton" destroy-method="close">
+        <constructor-arg name="localPort" value="7070"/>
+        <constructor-arg name="host" value="127.0.0.1"/>
+        <constructor-arg name="serverPort" value="7073"/>
+    </bean>
+
+    <!--UDP消息监听服务-->
+    <bean id="listener" class="org.niss.client.listener.ServerListener" lazy-init="true" scope="prototype">
+        <constructor-arg name="connection" ref="udpConnection"/>
+        <constructor-arg name="executor" ref="threadPool"/>
+    </bean>
+
+    
+    <!--客户端-->
+    <bean id="client" class="org.niss.client.Client" destroy-method="close" lazy-init="true" scope="prototype">
+        <property name="exec" ref="threadPool"/>
+        <property name="connection" ref="udpConnection"/>
+        <property name="tcpConnection" ref="tcpConnection"/>
+    </bean>
+
+</beans>

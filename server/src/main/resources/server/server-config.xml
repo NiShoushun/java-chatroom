@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="concurrentHashMap" class="java.util.concurrent.ConcurrentHashMap" scope="prototype">
+        <constructor-arg name="initialCapacity" value="100"/>
+        <constructor-arg name="loadFactor" value="0.75"/>
+        <constructor-arg name="concurrencyLevel" value="1"/>
+    </bean>
+
+    <bean name="sycQueue" class="java.util.concurrent.SynchronousQueue"/>
+    <bean id="threadPool" class="java.util.concurrent.ThreadPoolExecutor">
+        <constructor-arg name="corePoolSize" value="10"/>
+        <constructor-arg name="maximumPoolSize" value="100"/>
+        <constructor-arg name="keepAliveTime" value="6000"/>
+        <constructor-arg name="unit" value="SECONDS"/>
+        <constructor-arg name="workQueue" ref="sycQueue"/>
+    </bean>
+
+    <bean id="serverSocket" class="java.net.ServerSocket">
+        <constructor-arg name="port" value="7072"/>
+        <property name="receiveBufferSize" value="8192"/>
+    </bean>
+
+    <!--服务端UDP连接-->
+    <bean id="udpConnection" class="org.niss.connect.UdpConnection" lazy-init="true"
+          scope="singleton" destroy-method="close">
+        <!--本地UDP消息监听端口-->
+        <constructor-arg name="localPort" value="7073"/>
+        <!--接受缓存大小-->
+        <constructor-arg name="receiveBufferSize" value="1024000"/>
+    </bean>
+
+    <bean id="tcpServer" class="org.niss.server.TcpServer" destroy-method="close" scope="prototype">
+        <property name="messageConnectionMap" ref="concurrentHashMap"/>
+        <property name="tcpSessionConnectionMap" ref="concurrentHashMap"/>
+        <property name="serverSocket" ref="serverSocket"/>
+        <property name="udpConnection" ref="udpConnection"/>
+        <property name="exec" ref="threadPool"/>
+    </bean>
+
+</beans>
