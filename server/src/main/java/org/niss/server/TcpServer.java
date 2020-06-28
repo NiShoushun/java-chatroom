@@ -5,6 +5,7 @@ import org.niss.connect.Connection;
 import org.niss.connect.UdpConnection;
 import org.niss.message.Message;
 import org.niss.connect.TcpConnection;
+import org.niss.server.cache.MapCache;
 import org.niss.server.listener.TcpClientListener;
 import org.niss.server.listener.UdpClientListener;
 
@@ -29,14 +30,14 @@ public class TcpServer implements AutoCloseable {
     private ExecutorService exec;
 
     /**
-     * 保存用户名至会话连接的键值对
+     * 保存用户名至会话连接的键值对缓存
      */
-    private ConcurrentHashMap<String,TcpConnection> tcpSessionConnectionMap;
+    private MapCache<String,TcpConnection> tcpSessionConnectionMap;
 
     /**
      * 保存用户名至消息连接的键值对
      */
-    private ConcurrentHashMap<String,InetSocketAddress> messageAddressMap;
+    private MapCache<String,InetSocketAddress> messageAddressMap;
 
 
     /**
@@ -52,7 +53,7 @@ public class TcpServer implements AutoCloseable {
     public TcpServer() {
     }
 
-    public void setMessageConnectionMap(ConcurrentHashMap<String, InetSocketAddress> messageAddressMap) {
+    public void setMessageConnectionMap(MapCache<String, InetSocketAddress> messageAddressMap) {
         this.messageAddressMap = messageAddressMap;
     }
 
@@ -60,7 +61,7 @@ public class TcpServer implements AutoCloseable {
         return messageAddressMap.get(username);
     }
 
-    public ConcurrentHashMap<String, InetSocketAddress> getUsernameInetAddrMap() {
+    public MapCache<String, InetSocketAddress> getUsernameInetAddrMap() {
         return this.messageAddressMap;
     }
 
@@ -105,7 +106,7 @@ public class TcpServer implements AutoCloseable {
         return this.udpConnection;
     }
 
-    public void setTcpSessionConnectionMap(ConcurrentHashMap<String, TcpConnection> tcpSessionConnectionMap) {
+    public void setTcpSessionConnectionMap(MapCache<String,TcpConnection> cache) {
         this.tcpSessionConnectionMap = tcpSessionConnectionMap;
     }
 
@@ -121,11 +122,11 @@ public class TcpServer implements AutoCloseable {
         return exec;
     }
 
-    public ConcurrentHashMap<String, TcpConnection> getTcpSessionConnectionMap() {
+    public MapCache<String, TcpConnection> getTcpSessionConnectionMap() {
         return tcpSessionConnectionMap;
     }
 
-    public ConcurrentHashMap<String, InetSocketAddress> getMessageAddressMap() {
+    public MapCache<String, InetSocketAddress> getMessageAddressMap() {
         return messageAddressMap;
     }
 

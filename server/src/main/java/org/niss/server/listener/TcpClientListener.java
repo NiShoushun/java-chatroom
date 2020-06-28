@@ -70,21 +70,21 @@ public class TcpClientListener implements Runnable, AutoCloseable {
             case PUBLIC_TEXT: {
                 logger.info(address + " 发送【公开】消息:\"" + message.getText() + "\"");
                 forwardMessage(message);
-                logger.info("成功转发"+ address + " 的公开消息:\"" + message.getText() + "\"");
+                logger.info("成功转发" + address + " 的公开消息:\"" + message.getText() + "\"");
                 break;
             }
             case PRIVATE_TEXT: {
                 logger.info(address + " 发送【私人】消息:\"" + message.getText() + "\"");
                 forwardPrivateMessage(message);
-                logger.info("成功转发"+ address + " 的私人消息:\"" + message.getText() + "\"");
+                logger.info("成功转发" + address + " 的私人消息:\"" + message.getText() + "\"");
                 break;
             }
             case USER_LIST: {
                 try {
-                    logger.debug(connection.getInetAddress()+"请求用户列表");
+                    logger.debug(connection.getInetAddress() + "请求用户列表");
                     sendUserList(address);
-                    logger.debug("用户列表==>" + connection.getInetAddress()+ "已推送");
-                }catch (IOException e) {
+                    logger.debug("用户列表==>" + connection.getInetAddress() + "已推送");
+                } catch (IOException e) {
                     logger.debug("推送用户列表==>" + connection.getInetAddress() + " 失败" + e);
                 }
                 break;
@@ -101,12 +101,12 @@ public class TcpClientListener implements Runnable, AutoCloseable {
     private void forwardPrivateMessage(Message message) {
         InetAddress address = connection.getInetAddress();
         // 从私有消息中获取接收者用户列表，再通过服务类的map获取连接，并发送该消息
-        for (String toName: message.getUsernames()) {
+        for (String toName : message.getUsernames()) {
             try {
                 Connection channel = tcpServer.getTcpConnectionByName(toName);
                 channel.sendObject(message);
             } catch (IOException e) {
-                logger.warn(address + " 向" + username + "发送私人消息失败: "+e);
+                logger.warn(address + " 向" + username + "发送私人消息失败: " + e);
             }
         }
     }
@@ -116,13 +116,13 @@ public class TcpClientListener implements Runnable, AutoCloseable {
      *
      * @param message 公开文本消息
      */
-    private void forwardMessage(Message message) throws IOException  {
+    private void forwardMessage(Message message) throws IOException {
         for (TcpConnection tcpConnection : tcpServer.getTcpConnections()) {
             try {
                 Message to = Message.newMessage(Message.MessageType.PUBLIC_TEXT, username, message.getText());
                 tcpConnection.sendObject(to);
-            }catch (Exception e){
-                logger.warn("转发消息"+message+"==> "+connection.getRemoteInetSocketAddress()+" 失败: "+e);
+            } catch (Exception e) {
+                logger.warn("转发消息" + message + "==> " + connection.getRemoteInetSocketAddress() + " 失败: " + e);
             }
         }
     }
@@ -131,8 +131,11 @@ public class TcpClientListener implements Runnable, AutoCloseable {
      * 向用户发送用户列表
      */
     private void sendUserList(InetSocketAddress address) throws IOException {
-        ConcurrentHashMap<String,InetSocketAddress> map = tcpServer.getUsernameInetAddrMap();
-        Message message = Message.newUserListMessage("system",map);
+        ConcurrentHashMap<String, InetSocketAddress> userMap = new ConcurrentHashMap<>();
+        for (String username : tcpServer.getUsers()) {
+            userMap.put(username, null);
+        }
+        Message message = Message.newUserListMessage("system", userMap);
         connection.sendObject(message);
     }
 
@@ -142,7 +145,7 @@ public class TcpClientListener implements Runnable, AutoCloseable {
             try {
                 connection.close();
             } catch (IOException ioException) {
-                logger.debug("关闭客户端监听器发生异常",ioException);
+                logger.debug("关闭客户端监听器发生异常", ioException);
             }
         }
     }

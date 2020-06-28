@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!--用户登录map-->
-    <bean id="userMap" class="java.util.concurrent.ConcurrentHashMap" scope="singleton">
+    <bean id="userMap" class="java.util.concurrent.ConcurrentHashMap" scope="prototype">
         <constructor-arg name="initialCapacity" value="100"/>
         <constructor-arg name="loadFactor" value="0.75"/>
         <constructor-arg name="concurrencyLevel" value="1"/>
